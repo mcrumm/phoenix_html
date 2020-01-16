@@ -1036,27 +1036,27 @@ defmodule Phoenix.HTML.Form do
       # Assuming form contains a User schema
       select(form, :age, 0..120)
       #=> <select id="user_age" name="user[age]">
-          <option value="0">0</option>
+          <option value="0" selected>0</option>
           ...
           <option value="120">120</option>
           </select>
 
       select(form, :role, ["Admin": "admin", "User": "user"])
       #=> <select id="user_role" name="user[role]">
-          <option value="admin">Admin</option>
+          <option value="admin" selected>Admin</option>
           <option value="user">User</option>
           </select>
 
       select(form, :role, [[key: "Admin", value: "admin", disabled: true],
                            [key: "User", value: "user"]])
       #=> <select id="user_role" name="user[role]">
-          <option value="admin" disabled="disabled">Admin</option>
+          <option value="admin" disabled="disabled" selected>Admin</option>
           <option value="user">User</option>
           </select>
 
       select(form, :role, ["Admin": "admin", "User": "user"], prompt: "Choose your role")
       #=> <select id="user_role" name="user[role]">
-          <option value="">Choose your role</option>
+          <option value="" selected>Choose your role</option>
           <option value="admin">Admin</option>
           <option value="user">User</option>
           </select>
@@ -1066,17 +1066,17 @@ defmodule Phoenix.HTML.Form do
 
       select(form, :manager_id, Enum.map(@managers, &{&1.name, &1.id}))
       #=> <select id="manager_id" name="project[manager_id]">
-          <option value="1">Mary Jane</option>
+          <option value="1" selected>Mary Jane</option>
           <option value="2">John Doe</option>
           </select>
 
   Finally, if the values are a list or a map, we use the keys for
   grouping:
 
-      select(form, :country, ["Europe": ["UK", "Sweden", "France"]], ...})
+      select(form, :country, ["Europe": ["UK", "Sweden", "France"], ...])
       #=> <select id="user_country" name="user[country]">
           <optgroup label="Europe">
-            <option>UK</option>
+            <option selected>UK</option>
             <option>Sweden</option>
             <option>France</option>
           </optgroup>
@@ -1092,6 +1092,10 @@ defmodule Phoenix.HTML.Form do
 
   Be aware that a `:multiple` option will not generate a correctly
   functioning multiple select element. Use `multiple_select/4` instead.
+
+  Similarly, when using keyword lists for options, be aware
+  that manually setting a `:selected` key on the option may
+  generate a select element with undefined behavior.
 
   All other options are forwarded to the underlying HTML tag.
   """
