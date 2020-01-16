@@ -783,12 +783,12 @@ defmodule Phoenix.HTML.FormTest do
   test "select/4" do
     assert safe_to_string(select(:search, :key, ~w(foo bar))) ==
              ~s(<select id="search_key" name="search[key]">) <>
-               ~s(<option value="foo">foo</option>) <>
+               ~s(<option value="foo" selected>foo</option>) <>
                ~s(<option value="bar">bar</option>) <> ~s(</select>)
 
     assert safe_to_string(select(:search, :key, Foo: "foo", Bar: "bar")) ==
              ~s(<select id="search_key" name="search[key]">) <>
-               ~s(<option value="foo">Foo</option>) <>
+               ~s(<option value="foo" selected>Foo</option>) <>
                ~s(<option value="bar">Bar</option>) <> ~s(</select>)
 
     assert safe_to_string(
@@ -798,14 +798,24 @@ defmodule Phoenix.HTML.FormTest do
              ])
            ) ==
              ~s(<select id="search_key" name="search[key]">) <>
-               ~s(<option value="foo">Foo</option>) <>
+               ~s(<option value="foo" selected>Foo</option>) <>
                ~s(<option value="bar" disabled>Bar</option>) <> ~s(</select>)
+
+    assert safe_to_string(
+             select(:search, :key, [
+               [key: "Foo", value: "foo"],
+               [key: "Bar", value: "bar", selected: true]
+             ])
+           ) ==
+             ~s(<select id="search_key" name="search[key]">) <>
+               ~s(<option value="foo">Foo</option>) <>
+               ~s(<option value="bar" selected>Bar</option>) <> ~s(</select>)
 
     assert safe_to_string(
              select(:search, :key, [Foo: "foo", Bar: "bar"], prompt: "Choose your destiny")
            ) ==
              ~s(<select id="search_key" name="search[key]">) <>
-               ~s(<option value="">Choose your destiny</option>) <>
+               ~s(<option value="" selected>Choose your destiny</option>) <>
                ~s(<option value="foo">Foo</option>) <>
                ~s(<option value="bar">Bar</option>) <> ~s(</select>)
 
@@ -861,6 +871,16 @@ defmodule Phoenix.HTML.FormTest do
   end
 
   test "select/4 with groups" do
+    assert safe_form(&select(&1, :key, [{"foo", ~w(bar baz)}, {"qux", ~w(qux quz)}])) ==
+             ~s(<select id="search_key" name="search[key]">) <>
+               ~s(<optgroup label="foo">) <>
+               ~s(<option value="bar" selected>bar</option>) <>
+               ~s(<option value="baz">baz</option>) <>
+               ~s(</optgroup>) <>
+               ~s(<optgroup label="qux">) <>
+               ~s(<option value="qux">qux</option>) <>
+               ~s(<option value="quz">quz</option>) <> ~s(</optgroup>) <> ~s(</select>)
+
     assert safe_form(
              &select(&1, :key, [{"foo", ~w(bar baz)}, {"qux", ~w(qux quz)}], value: "qux")
            ) ==
